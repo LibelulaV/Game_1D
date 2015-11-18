@@ -6,18 +6,37 @@
 #include <stdio.h>
 #include <windows.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define WORLD_MAX_WIDTH 80
 #define WORLD_MIN_WIDTH 0
 
+#define PLAYER_MAX_LIFE 3
+#define PLAYER_MAX_BULLETS 6
+
 #define GROUND_TEXTURE '_'
 #define PLAYER 'X'
 #define ENEMY 'O'
+#define CHARGER '='
+
+#define ENEMY_KILL_POINS 10; 
+
+//#define MED_KIT '+'
+//#define STAR '*'
+//#define BOMB 'o'
 
 #define RIGHT_BULLET '>'
 #define LEFT_BULLET '<'
 
 #define PER_FRAME_SLEEP_MS 80
+#define GAME_OVER_SLEEP_MS 5000
+
+struct TPlayer {
+	int m_pos;
+	int m_life;
+	int m_ammunition;
+	int m_points;
+};
 
 struct TBullet {
 	int m_pos;
@@ -30,9 +49,31 @@ struct TEnemy {
 	int m_dir;
 };
 
+struct TCharger {
+	int m_pos;
+	bool m_exist;
+};
+
+void printPlayerInfo(TPlayer const player) {
+	printf("\n Ammunition:\t");
+	for (int i = 0; i < player.m_ammunition; i++) {
+		printf(">");
+	}
+	printf("\n Lifes:\t\t");
+	for (int i = 0; i < player.m_life; i++) {
+		printf("|");
+	}
+	printf("\n Score:\t\t%d", player.m_points);
+}
+
 int main() {
+
 	// World state
-	int pos = WORLD_MAX_WIDTH / 2;
+	TPlayer player;
+	player.m_pos = WORLD_MAX_WIDTH / 2;
+	player.m_life = PLAYER_MAX_LIFE;
+	player.m_ammunition = PLAYER_MAX_BULLETS;
+	player.m_points = 0;
 
 	TBullet rightBullet;
 	rightBullet.m_exist = false;
@@ -43,15 +84,18 @@ int main() {
 	TEnemy enemy;
 	enemy.m_exist = false;
 
-	// Game code
-	printf("\n\n\n\n\n\n\n\n\n\n");
+	TCharger charger;
+	charger.m_exist = false;
 
-	bool gameOver = false;
+	bool game_over = false;
+
+	// Game code
 	int key = 0;
+
 	do {
 		char world[WORLD_MAX_WIDTH];
 		for (int i = 0; i < WORLD_MAX_WIDTH; i++) {
-			if (i == pos)
+			if (i == player.m_pos)
 				world[i] = PLAYER;
 			else if (leftBullet.m_exist && i == leftBullet.m_pos)
 				world[i] = LEFT_BULLET;
@@ -59,13 +103,16 @@ int main() {
 				world[i] = RIGHT_BULLET;
 			else if (enemy.m_exist && i == enemy.m_pos)
 				world[i] = ENEMY;
+			else if (charger.m_exist && i == charger.m_pos)
+				world[i] = CHARGER;
 			else
 				world[i] = GROUND_TEXTURE;
 			world[WORLD_MAX_WIDTH - 1] = '\0';
 		}
+		printPlayerInfo(player);
 
+		printf("\n\n\n\n\n\n\n");
 		printf("%s", world);
-		printf("\r");
 
 		if (leftBullet.m_exist) {
 			leftBullet.m_pos -= 1;
@@ -81,27 +128,38 @@ int main() {
 			}
 		}
 
+		if (charger.m_exist && player.m_pos == charger.m_pos) {
+			charger.m_exist = false;
+			player.m_ammunition = PLAYER_MAX_BULLETS;
+		}
+
 		if (enemy.m_exist) {
 			enemy.m_pos += enemy.m_dir;
-			if (abs(pos - enemy.m_pos) <= 1) {
-				gameOver = true;
+			if (abs(player.m_pos - enemy.m_pos) <= 1) {
 				enemy.m_exist = false;
+				player.m_life--;
+				if (player.m_life <= 0) {
+					game_over = true;
+				}
 			}
 			else if (enemy.m_dir == -1 && rightBullet.m_exist) {
 				if (abs(rightBullet.m_pos - enemy.m_pos) <= 1) {
 					enemy.m_exist = false;
 					rightBullet.m_exist = false;
+					player.m_points += ENEMY_KILL_POINS;
 				}
 			}
 			else if (enemy.m_dir == 1 && leftBullet.m_exist) {
 				if (abs(leftBullet.m_pos - enemy.m_pos) <= 1) {
 					enemy.m_exist = false;
 					leftBullet.m_exist = false;
+					player.m_points += ENEMY_KILL_POINS;
 				}
 			}
 		}
 		else {
 			enemy.m_exist = true;
+			srand(time(0));
 			if (rand() % 2) {
 				enemy.m_dir = 1;
 				enemy.m_pos = WORLD_MIN_WIDTH;
@@ -116,45 +174,56 @@ int main() {
 			key = _getch();
 			switch (key) {
 			case 'a': {
-				if (pos > WORLD_MIN_WIDTH)
-					pos--;
+				if (player.m_pos > WORLD_MIN_WIDTH)
+					player.m_pos--;
 				break;
 			}
 			case 'd': {
-				if (pos < (WORLD_MAX_WIDTH - 2))
-					pos++;
+				if (player.m_pos < (WORLD_MAX_WIDTH - 2))
+					player.m_pos++;
 				break;
 			}
 			case 'q': {
-				if (pos > WORLD_MIN_WIDTH && !leftBullet.m_exist) {
+				if (player.m_pos > WORLD_MIN_WIDTH && !leftBullet.m_exist && player.m_ammunition) {
 					leftBullet.m_exist = true;
-					leftBullet.m_pos = pos - 1;
+					leftBullet.m_pos = player.m_pos - 1;
+					player.m_ammunition--;
 				}
 				break;
 			}
 			case 'e': {
-				if (pos < (WORLD_MAX_WIDTH - 2) && !rightBullet.m_exist) {
+				if (player.m_pos < (WORLD_MAX_WIDTH - 2) && !rightBullet.m_exist && player.m_ammunition) {
 					rightBullet.m_exist = true;
-					rightBullet.m_pos = pos + 1;
+					rightBullet.m_pos = player.m_pos + 1;
+					player.m_ammunition--;
 				}
 				break;
 			}
 			}
 		}
-
+		if (player.m_ammunition <= 1 && !charger.m_exist) {
+			charger.m_exist = true;
+			int pos = player.m_pos;
+			while (player.m_pos == pos) {
+				srand(time(0));
+				pos = rand() % (WORLD_MAX_WIDTH - 2);
+			}
+			charger.m_pos = pos;
+		}
 		Sleep(PER_FRAME_SLEEP_MS);
+		system("cls");
+	} while (key != 32 && !game_over); // 32: blanck space
 
-	} while (key != 32 && !gameOver); // 32: blanck space
-
-	if (gameOver) {
-		for (int i = 0; i < WORLD_MAX_WIDTH; i++) {
-			if (i == (WORLD_MAX_WIDTH / 2) - 5) {
-				printf("GAME OVER");
+	if (game_over) {
+		printf("\n\n\n\n\n\n\n\n\n\n");
+		for (int i = 0; i < WORLD_MAX_WIDTH; i = i + 2) {
+			if (i == (WORLD_MAX_WIDTH / 2) - 6) {
+				printf(" GAME OVER");
 				i = i + 10;
 			}
-			else printf("%c", 22);
+			else printf(" =");
 		}
-		Sleep(PER_FRAME_SLEEP_MS * 100);
+		Sleep(GAME_OVER_SLEEP_MS);
 	}
 	return 0;
 }
