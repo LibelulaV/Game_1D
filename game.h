@@ -12,29 +12,13 @@
 #define STAR_POINTS 50
 
 #define PER_FRAME_SLEEP_MS 80
-
-#define GROUND_TEXTURE '_'
-#define PLAYER 'X'
-#define ENEMY 'O'
-#define CHARGER '='
-#define MED_KIT '\3'
-
-#define STAR '\17'
-#define BOMB 'o'
-
-#define RIGHT_BULLET '>'
-#define LEFT_BULLET '<'
+#define GAME_OVER_SLEEP_MS 4000
 
 struct TPlayer {
 	int m_pos;
 	int m_life;
 	int m_ammunition;
 	int m_points;
-};
-
-struct TBullet {
-	int m_pos;
-	bool m_exist;
 };
 
 struct TEnemy {
@@ -66,9 +50,6 @@ struct TMedkit {
 
 extern TPlayer player;
 extern TEnemy enemy;
-
-extern TBullet rightBullet;
-extern TBullet leftBullet;
 
 extern TCharger charger;
 extern TMedkit medkit;

@@ -3,9 +3,10 @@
 
 #include "game.h"
 #include "items.h"
+#include "bullets.h"
 
 #define BOMB_SPAM_RANK 970
-#define STAR_SPAM_RANK 2
+#define STAR_SPAM_RANK 30
 
 void itemsRandomGeneration() {
 	if (player.m_ammunition <= 3 && !charger.m_exist) {
@@ -78,21 +79,15 @@ void itemsCollisionsCheck() {
 			bomb.m_exist = false;
 			player.m_points = 0;
 		}
-		else if (rightBullet.m_exist && rightBullet.m_pos == bomb.m_pos) {
+		else if (bulletsIsItemCollition(bomb.m_pos)) {
 			bomb.m_exist = false;
-			rightBullet.m_exist = false;
-		}
-		else if (leftBullet.m_exist && leftBullet.m_pos == bomb.m_pos) {
-			bomb.m_exist = false;
-			leftBullet.m_exist = false;
+			
 		}
 	}
-
 	if (charger.m_exist && player.m_pos == charger.m_pos) {
 		charger.m_exist = false;
 		player.m_ammunition = PLAYER_MAX_BULLETS;
 	}
-
 	if (medkit.m_exist && player.m_pos == medkit.m_pos) {
 		medkit.m_exist = false;
 		if (player.m_life + medkit.m_healp <= PLAYER_MAX_LIFE)

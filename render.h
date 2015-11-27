@@ -7,4 +7,6 @@ void paintWorldState();
 
 void paintBackGround(); 
 
+void paintScore(int n, char name[20], int points); 
+
 #endif
