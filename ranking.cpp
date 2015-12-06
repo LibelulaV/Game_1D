@@ -5,7 +5,7 @@
 #include "ranking.h"
 #include "render.h"
 
-#define RECORD_MIN_POINTS 100
+#define RECORD_MIN_POINTS 150
 
 struct TScore {
 	int m_points; 

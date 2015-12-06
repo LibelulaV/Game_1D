@@ -4,11 +4,13 @@
 //#pragma warning(disable: 4710)
 
 #include "game.h"
+#include "console.h"
 #include "render.h"
 #include "items.h"
 #include "weather.h"
 #include "ranking.h"
 #include "bullets.h"
+#include "enemies.h"
 
 #include <conio.h>
 #include <windows.h>
@@ -16,15 +18,8 @@
 #include <time.h>
 #include <stdio.h>
 
-// characters
+// player
 TPlayer player;
-TEnemy enemy;
-
-// items
-TCharger charger;
-TMedkit medkit;
-TStar star;
-TBomb bomb;
 
 static bool game_over; 
 static bool exit_game; 
@@ -32,60 +27,40 @@ static bool exit_game;
 int main() {
 	int key = 0;
 	do {
+
+		// world 
 		weatherInit(WORLD_MAX_WIDTH); 
 
-		// world state
 		player.m_pos = WORLD_MAX_WIDTH / 2 ;
 		player.m_life = PLAYER_MAX_LIFE; 
 		player.m_ammunition = PLAYER_MAX_BULLETS;
 		player.m_points = 0; 
-	
-		enemy.m_exist = false; 
-
-		charger.m_exist = false; 
-		medkit.m_exist = false; 
-		star.m_exist = false; 
-		bomb.m_exist = false; 
 
 		game_over = false;
 		exit_game = false; 
+
+		itemsInit();
+
+		srand(static_cast<unsigned int>(time(NULL)));
 
 		// play 
 		do { 
 			// world 
 			paintWorldState(); 
-			weatherUpdate(); 
 
-			// items effects 
-			itemsCollisionsCheck();
+			enemiesGenerate(); 
+			itemsGenerate();
 
-			// enemy
-			if (enemy.m_exist) {
-				enemy.m_pos += enemy.m_dir; 
-				if (bulletsIsCharacterCollition(enemy.m_pos)) {
-					enemy.m_exist = false; 
-					player.m_points += ENEMY_KILL_POINS;
-				}
-				else if (abs(player.m_pos - enemy.m_pos) <= 1) {
-					enemy.m_exist = false;
-					player.m_life--;
-					if (player.m_life <= 0) {
+			itemsCheckPlayerCollisionsAndUpdate();
+			enemiesCheckBulletsCollition();
+
+			if (enemiesIsPlayerCollition()) {
+				player.m_life--;
+					if (player.m_life <= 0) 
 						game_over = true;
-					}
-				}
 			}
-			else { // TODO: enemy random spam (?) 
-				enemy.m_exist = true; 
-				srand(static_cast<unsigned int>(time(NULL)));
-				if (rand() % 2) {
-					enemy.m_dir = 1; 
-					enemy.m_pos = WORLD_MIN_WIDTH; 
-				}
-				else {
-					enemy.m_dir = -1;
-					enemy.m_pos = WORLD_MAX_WIDTH - 1; 
-				}
-			}
+			else 
+				enemiesCheckBulletsCollition();
 
 			// player actions
 			if (_kbhit()) {
@@ -113,19 +88,21 @@ int main() {
 						break;
 				}
 			}
+	
+			if(!enemiesIsEmpty())
+				enemiesUpdate();
 
-			// bullets
 			if (!bulletsIsEmpty())
 				bulletsUpdateState();
 
-			// items generation
-			itemsRandomGeneration(); 
-
+			weatherUpdate();
+			
 			Sleep(PER_FRAME_SLEEP_MS);
-			system("cls");
+			consoleClear();
 
-		} while (key!= 27 && !game_over); // 32: blanck space
+		} while (key!= 27 && !game_over); // 27: ESC
 
+		enemiesEnd(); 
 		bulletsEnd(); 
 		weatherEnd(); 
 
@@ -136,7 +113,7 @@ int main() {
 			if(rankingIsRecord(player.m_points))
 				rankingRecordScore(player.m_points); 
 			if (!rankingIsEmpty()) {
-				system("cls");
+				consoleClear();
 				rankingPrintScores();
 			}
 			printf("\n\n Press ENTER to start the game. Press any other key to quit.");

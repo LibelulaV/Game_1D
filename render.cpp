@@ -2,13 +2,18 @@
 #include "render.h"
 #include "game.h"
 #include "bullets.h"
+#include "enemies.h"
+#include "items.h"
 
 #include <stdio.h>
 #include <windows.h>
 
 #define GROUND_TEXTURE '_'
 #define PLAYER 'X'
-#define ENEMY 'O'
+
+#define ENEMY '0'
+#define BOSS 'O'
+
 #define CHARGER '='
 #define MED_KIT '\3'
 
@@ -69,7 +74,11 @@ void paintWorldState() {
 
 	// generating world
 	for (int i = 0; i < WORLD_MAX_WIDTH; i++) {
+		int enemy = 0; 
 		int direction = bulletsGetBulletDirection(i);
+		if (!direction) 
+			enemy = enemiesGetEnemyType(i);
+		
 		if (i == player.m_pos) {
 			setTextColor(WHITE);
 			printf("%c", PLAYER); 
@@ -84,24 +93,30 @@ void paintWorldState() {
 				printf("%c", LEFT_BULLET);
 			}
 		}
-		else if (enemy.m_exist && i == enemy.m_pos) {
-			setTextColor(BROWN);
-			printf("%c", ENEMY);
+		else if (enemy) { // if enemy != 0, there is a enemy.  
+			if (enemy == 1){
+				setTextColor(MAGENTA);
+				printf("%c", ENEMY);
+			}
+			else {
+				setTextColor(LIGHT_MAGENTA);
+				printf("%c", BOSS);
+			}
 		}	
-		else if (charger.m_exist && i == charger.m_pos) {
+		else if (itemsExistCharger() && i == itemsGetChargerPos()) {
 			setTextColor(DARK_GREY);
 			printf("%c", CHARGER);
 		}
-		else if (medkit.m_exist && i == medkit.m_pos) {
+		else if (itemsExistMedkit() && i == itemsGetMedkitPos()) {
 			setTextColor(RED);
 			printf("%c", MED_KIT);
 		}
-		else if (star.m_exist && i == star.m_pos) {
+		else if (itemsExistStar() && i == itemsGetStarPos()) {
 			setTextColor(YELLOW);
 			printf("%c", STAR);
 		}
-		else if (bomb.m_exist && i == bomb.m_pos) {
-			setTextColor(MAGENTA);
+		else if (itemsExistBomb() && i == itemsGetBombPos()) {
+			setTextColor(BROWN);
 			printf("%c", BOMB);
 		}
 		else {
