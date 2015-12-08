@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <time.h>
+#include <windows.h>
 
 #include "game.h"
 #include "items.h"
@@ -96,14 +97,17 @@ void itemsGenerate() {
 void itemsCheckPlayerCollisionsAndUpdate() {
 	if (star.m_exist && player.m_pos == star.m_pos) {
 		star.m_exist = false;
+		Beep(3000, 100);
 		player.m_points += STAR_POINTS;
 	}
 	else if (charger.m_exist && player.m_pos == charger.m_pos) {
 		charger.m_exist = false;
+		Beep(3000, 100);
 		player.m_ammunition = PLAYER_MAX_BULLETS;
 	}
 	else if (medkit.m_exist && player.m_pos == medkit.m_pos) {
 		medkit.m_exist = false;
+		Beep(3000, 100);
 		if (player.m_life + medkit.m_healp >= PLAYER_MAX_LIFE)
 			player.m_life = PLAYER_MAX_LIFE;
 		else player.m_life += medkit.m_healp;
@@ -111,10 +115,13 @@ void itemsCheckPlayerCollisionsAndUpdate() {
 	else if (bomb.m_exist) {
 		if (player.m_pos == bomb.m_pos) {
 			bomb.m_exist = false;
+			Beep(1000, 100);
 			player.m_points = 0;
 		}
-		else if (bulletsIsItemCollition(bomb.m_pos))
+		else if (bulletsIsItemCollition(bomb.m_pos)) {
 			bomb.m_exist = false;
+			Beep(4000, 100);
+		}
 	}
 }
 

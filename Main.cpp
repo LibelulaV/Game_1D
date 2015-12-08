@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
+#include <iostream>
 
 // player
 TPlayer player;
@@ -27,9 +28,10 @@ static bool exit_game;
 int main() {
 	int key = 0;
 	do {
-
 		// world 
 		weatherInit(WORLD_MAX_WIDTH); 
+
+		//PlaySound(TEXT("song_of_storms.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
 		player.m_pos = WORLD_MAX_WIDTH / 2 ;
 		player.m_life = PLAYER_MAX_LIFE; 
@@ -66,21 +68,21 @@ int main() {
 			if (_kbhit()) {
 				key = _getch();
 				switch (key) {
-					case 'a': 
+					case 'q': 
 						if (player.m_pos > WORLD_MIN_WIDTH)
 							player.m_pos--;
 						break; 
-					case 'd': 
+					case 'w': 
 						if (player.m_pos < (WORLD_MAX_WIDTH - 2))
 							player.m_pos++;
 						break; 
-					case 'j': 
+					case 'o': 
 						if (player.m_pos > WORLD_MIN_WIDTH && player.m_ammunition) {
-							bulletsShotLeft(); 
+							bulletsShotLeft();
 							player.m_ammunition--;
 						}
 						break; 
-					case 'l': 
+					case 'p': 
 						if (player.m_pos < (WORLD_MAX_WIDTH - 2) && player.m_ammunition) {
 							bulletsShotRight();
 							player.m_ammunition--; 
@@ -102,12 +104,16 @@ int main() {
 
 		} while (key!= 27 && !game_over); // 27: ESC
 
+		
+		//PlaySound(NULL, NULL, NULL);
+
 		enemiesEnd(); 
 		bulletsEnd(); 
 		weatherEnd(); 
 
 		// end of game information
 		if (game_over) {
+			//PlaySound(TEXT("game_over_mario.wav"), NULL, SND_FILENAME | SND_ASYNC | NULL);
 			paintGameOver(); 
 			Sleep(GAME_OVER_SLEEP_MS); 
 			if(rankingIsRecord(player.m_points))

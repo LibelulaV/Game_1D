@@ -1,6 +1,7 @@
 #pragma warning(disable: 4996) 
 
 #include <list>
+#include <windows.h>
 
 #include "game.h"
 #include "bullets.h"
@@ -20,6 +21,7 @@ void bulletsShotLeft() {
 	bullet->m_direction = - 1; 
 	bullet->m_collides = false;
 	bullets.push_front(bullet);
+	Beep(1000, 100);
 }
 
 void bulletsShotRight() {
@@ -28,6 +30,7 @@ void bulletsShotRight() {
 	bullet->m_direction = + 1;
 	bullet->m_collides = false;
 	bullets.push_front(bullet);
+	Beep(1000, 100);
 }
 
 void bulletsUpdateState() { 
@@ -60,11 +63,11 @@ bool bulletsIsCharacterCollition(int x) {
 	it_bullets = bullets.begin();
 	bool collition = false;
 	while (!collition && it_bullets != bullets.end()) {
-		if (abs((*it_bullets)->m_pos - x) <= 1) {
+		if (abs((*it_bullets)->m_pos - x) <= 1 && !(*it_bullets)->m_collides) {
 			collition = true;
+			Beep(8000, 100);
 			(*it_bullets)->m_collides = true;
 		}
-
 		else it_bullets++;
 	}
 	return collition;

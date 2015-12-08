@@ -3,6 +3,7 @@
 #include <list>
 #include <time.h>
 #include <math.h>
+#include <windows.h>
 
 #include "game.h"
 #include "enemies.h"
@@ -113,6 +114,7 @@ bool enemiesIsPlayerCollition() {
 			(*it_enemies)->m_collides = true;
 			if (!collition) {
 				collition = true; 
+				Beep(2000, 100);
 			}
 		}
 		it_enemies++;

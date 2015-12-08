@@ -63,7 +63,6 @@ void paintPlayerStats() {
 	printf("\n Score:\t\t");
 	setTextColor(LIGHT_GREEN);
 	printf("%d\n", player.m_points);
-	
 }
 
 void paintWorldState() {
