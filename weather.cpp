@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 static int * weatherState; 
-static char states[] = {'|', '.', '^','´*','´', '-'};
+static char states[] = {'|', '.', '^','*','´', '-'};
 static int weather_size;
 static int cicle;
 static int cicle_state;

@@ -31,7 +31,7 @@ int main() {
 		// world 
 		weatherInit(WORLD_MAX_WIDTH); 
 
-		//PlaySound(TEXT("song_of_storms.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+		PlaySound(TEXT("song_of_storms.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
 		player.m_pos = WORLD_MAX_WIDTH / 2 ;
 		player.m_life = PLAYER_MAX_LIFE; 
@@ -54,15 +54,14 @@ int main() {
 			itemsGenerate();
 
 			itemsCheckPlayerCollisionsAndUpdate();
-			enemiesCheckBulletsCollition();
-
+		
 			if (enemiesIsPlayerCollition()) {
 				player.m_life--;
 					if (player.m_life <= 0) 
 						game_over = true;
 			}
-			else 
-				enemiesCheckBulletsCollition();
+		
+			enemiesCheckBulletsCollition();
 
 			// player actions
 			if (_kbhit()) {
@@ -100,12 +99,13 @@ int main() {
 			weatherUpdate();
 			
 			Sleep(PER_FRAME_SLEEP_MS);
-			consoleClear();
+			consoleGoTo(0, 0); 
 
 		} while (key!= 27 && !game_over); // 27: ESC
 
+		consoleClear();
 		
-		//PlaySound(NULL, NULL, NULL);
+		PlaySound(NULL, NULL, NULL);
 
 		enemiesEnd(); 
 		bulletsEnd(); 
@@ -113,7 +113,7 @@ int main() {
 
 		// end of game information
 		if (game_over) {
-			//PlaySound(TEXT("game_over_mario.wav"), NULL, SND_FILENAME | SND_ASYNC | NULL);
+			PlaySound(TEXT("game_over_mario.wav"), NULL, SND_FILENAME | SND_ASYNC | NULL);
 			paintGameOver(); 
 			Sleep(GAME_OVER_SLEEP_MS); 
 			if(rankingIsRecord(player.m_points))
@@ -127,6 +127,8 @@ int main() {
 			if (key != 13) // 13: ENTER
 				exit_game = true; 
 		}
+		consoleClear();
+
 	} while (key != 27 && !exit_game); // 27: ESC
 
 	rankingEnd(); 

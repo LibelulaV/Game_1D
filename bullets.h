@@ -6,7 +6,7 @@ void bulletsShotLeft();
 void bulletsShotRight();
 void bulletsUpdateState(); 
 bool bulletsIsItemCollition(int x);
-bool bulletsIsCharacterCollition(int x);
+bool bulletsIsCharacterCollition(int x, enemyType type);
 int bulletsGetBulletDirection(int x); 
 bool bulletsIsEmpty();
 void bulletsEnd(); 

@@ -64,7 +64,7 @@ void itemsGenerate() {
 				pos = rand() % (WORLD_MAX_WIDTH - 2);
 			}
 			medkit.m_pos = pos;
-			medkit.m_healp = (rand() % 2 + 1) + 1;
+			medkit.m_healp = (rand() % 2 + 2);
 		}
 	}
 

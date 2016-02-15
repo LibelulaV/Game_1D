@@ -14,11 +14,6 @@
 #define ENEMY_KILL_POINTS 10
 #define BOSS_KILL_POINTS 20
 
-enum enemyType { 
-	Normal = 1, 
-	Boss
-};
-
 struct TEnemy {
 	int m_pos;
 	int m_dir;
@@ -88,8 +83,8 @@ void enemiesUpdate() {
 void enemiesCheckBulletsCollition() {
 	it_enemies = enemies.begin();
 	while (it_enemies != enemies.end()) {
-		if (bulletsIsCharacterCollition((*it_enemies)->m_pos)){
-			if ((*it_enemies)->m_type == Boss) {
+		if (bulletsIsCharacterCollition((*it_enemies)->m_pos, (*it_enemies)->m_type)){
+			if ((*it_enemies)->m_type == Boss && !(*it_enemies)->m_collides) { 
 				TBoss * enemy = static_cast<TBoss *>(*it_enemies); 
 				enemy->m_life -= 1; 
 				if (enemy->m_life <= 0) {

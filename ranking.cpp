@@ -30,7 +30,7 @@ void rankingPrintScores() {
 }
 
 void rankingPrintHighestNScores(int n) {
-	if (n > ranking.size()) 
+	if (static_cast<unsigned int>(n) > ranking.size()) 
 		rankingPrintScores(); 
 	else {
 		int cont = 1;
@@ -56,7 +56,7 @@ void rankingRecordScore(int score) {
 		TScore * last = ranking.back(); 
 		if (first->m_points < score) 
 			ranking.push_front(new_score);
-		else if (last->m_player_name)
+		else if (last->m_points > score)
 			ranking.push_back(new_score);
 		else {
 			it_ranking = ranking.begin();

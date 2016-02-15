@@ -8,7 +8,7 @@
 #define PLAYER_MAX_LIFE 5
 #define PLAYER_MAX_BULLETS 10
 
-#define PER_FRAME_SLEEP_MS 50
+#define PER_FRAME_SLEEP_MS 80
 #define GAME_OVER_SLEEP_MS 8000
 
 struct TPlayer {
@@ -16,6 +16,11 @@ struct TPlayer {
 	int m_life;
 	int m_ammunition;
 	int m_points;
+};
+
+enum enemyType {
+	Normal = 1,
+	Boss
 };
 
 extern TPlayer player;

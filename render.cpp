@@ -15,9 +15,9 @@
 #define BOSS 'O'
 
 #define CHARGER '='
-#define MED_KIT '\3'
+#define MED_KIT '+'//'\3'
 
-#define STAR '\17'
+#define STAR 'x'//'\17'
 #define BOMB 'o'
 
 #define RIGHT_BULLET '>'
@@ -49,20 +49,26 @@ void setTextColor(EColor color) {
 void paintPlayerStats() {
 	setTextColor(WHITE);
 	printf("\n Ammunition:\t");
-	for (int i = 0; i < player.m_ammunition; i++) {
+	for (int i = 0; i < PLAYER_MAX_BULLETS; i++) {
 		setTextColor(LIGHT_GREY);
-		printf("%c", RIGHT_BULLET);
-		setTextColor(WHITE);
+		if (i < player.m_ammunition)
+			printf("%c", RIGHT_BULLET);
+		else
+			printf("  ");
+		setTextColor(WHITE); //meter blancos. 
 	}
 	printf("\n Lifes:\t\t");
-	for (int i = 0; i < player.m_life; i++) {
+	for (int i = 0; i < PLAYER_MAX_LIFE; i++) {
 		setTextColor(RED);
-		printf("%c", MED_KIT);
+		if (i < player.m_life)
+			printf("%c", MED_KIT);
+		else
+			printf("  "); 
 		setTextColor(WHITE);
 	}
 	printf("\n Score:\t\t");
 	setTextColor(LIGHT_GREEN);
-	printf("%d\n", player.m_points);
+	printf("%d          \n", player.m_points);
 }
 
 void paintWorldState() {
@@ -177,8 +183,15 @@ void paintGameOver() {
 }
 
 void paintScore(int n, char name[20], int points) {
-	if (n == 1)
-		printf("\n\t= = = = = RANKING = = = = =\n\n"); 
+	if (n == 1) {
+		setTextColor(CYAN);
+		printf("\n\t= = = = = ");
+		setTextColor(RED);
+		printf("RANKING");
+		setTextColor(CYAN);
+		printf(" = = = = = \n\n");
+	}
+	setTextColor(WHITE);
 	printf("\tPlayer %d: %s - %d\n", n, name, points);
 }
 

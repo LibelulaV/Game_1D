@@ -37,7 +37,7 @@ void bulletsUpdateState() {
 	it_bullets = bullets.begin(); 
 	while (it_bullets != bullets.end()){
 		(*it_bullets)->m_pos += (*it_bullets)->m_direction; 
-		if ((*it_bullets)->m_pos < WORLD_MIN_WIDTH || (*it_bullets)->m_pos >(WORLD_MAX_WIDTH - 2) || (*it_bullets)->m_collides) {
+		if ((*it_bullets)->m_pos < WORLD_MIN_WIDTH || (*it_bullets)->m_pos > (WORLD_MAX_WIDTH - 2) || (*it_bullets)->m_collides) {
 			delete (*it_bullets);
 			it_bullets = bullets.erase(it_bullets);
 		}
@@ -59,14 +59,18 @@ bool bulletsIsItemCollition(int x) {
 	return collition; 
 }
 
-bool bulletsIsCharacterCollition(int x) {
+bool bulletsIsCharacterCollition(int x, enemyType type) {
 	it_bullets = bullets.begin();
 	bool collition = false;
+	bool done = false; 
 	while (!collition && it_bullets != bullets.end()) {
 		if (abs((*it_bullets)->m_pos - x) <= 1 && !(*it_bullets)->m_collides) {
-			collition = true;
+			if (type == Normal)
+				done = true;
 			Beep(8000, 100);
 			(*it_bullets)->m_collides = true;
+			if (!collition)
+				collition = true; 
 		}
 		else it_bullets++;
 	}
